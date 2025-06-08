@@ -24,6 +24,14 @@ services:
       ConnectionStrings__Database: Host=db;Port=5432;Database=CustomerService;Username=postgres;Password=postgres;Include Error Detail=true
     ports:
       - "8080:80"
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: dotnet test /src/customer-api.tests/customer-api.tests.csproj
+    depends_on:
+      - db
 
 volumes:
   pgdata:

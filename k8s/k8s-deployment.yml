@@ -74,7 +74,7 @@ spec:
     spec:
       containers:
         - name: customer-api
-          image: xxxx/customer-api:latest # <-- using a place holder for now
+          image: xxxx/customer-api:latest # <-- dockerhub/ACR, using a place holder for now
           ports:
             - containerPort: 80
           env:

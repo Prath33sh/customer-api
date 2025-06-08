@@ -3,8 +3,8 @@ trigger:
 
 variables:
   imageName: customer-api
-  dockerRegistryServiceConnection: 'YourACRServiceConnection'
-  acrName: youracr.azurecr.io
+  dockerRegistryServiceConnection: 'YourACRServiceConnection' # placeholder for now
+  acrName: youracr.azurecr.io # placeholder
 
 stages:
 - stage: Build

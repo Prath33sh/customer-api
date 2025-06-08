@@ -25,6 +25,8 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> CreateCustomer([FromBody] CustomerRequest request)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         try
         {
             var customer = await _customerService.CreateCustomerAsync(request);
@@ -72,6 +74,8 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateCustomer([FromBody] CustomerUpdateRequest request)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         try
         {
             var customer = await _customerService.UpdateCustomerAsync(request);
