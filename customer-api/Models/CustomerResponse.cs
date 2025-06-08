@@ -1,5 +1,5 @@
 namespace CustomerApi.Models;
-public class UserResponse
+public class CustomerResponse
 {
     required public Guid Id { get; set; }
     required public string FirstName { get; set; }

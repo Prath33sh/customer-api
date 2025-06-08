@@ -1,6 +1,6 @@
 namespace CustomerApi.Models
 {
-    public class UserRequest
+    public class CustomerRequest
     {
         required public string FirstName { get; set; }
         required public string LastName { get; set; }

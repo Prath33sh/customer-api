@@ -1,6 +1,6 @@
 namespace CustomerApi.Models
 {
-    public class UserUpdateRequest : UserRequest
+    public class CustomerUpdateRequest : CustomerRequest
     {
         required public Guid Id { get; set; }
     }
