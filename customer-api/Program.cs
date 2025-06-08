@@ -18,7 +18,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddDbContext<CustomerApi.Data.CustomerServiceDBContext>(
      options => options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
-
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<CustomerApi.Data.CustomerServiceDBContext>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -35,8 +36,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapControllers();
-
-//TDOD: add healthchecks
 
 app.Run();
 

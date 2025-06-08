@@ -33,3 +33,5 @@ packages/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
+
+**/appsettings.Development.json
