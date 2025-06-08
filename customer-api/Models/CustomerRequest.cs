@@ -1,11 +1,21 @@
-namespace CustomerApi.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace CustomerApi.Models;
+
+public class CustomerRequest
 {
-    public class CustomerRequest
-    {
-        required public string FirstName { get; set; }
-        required public string LastName { get; set; }
-        public string? MiddleName { get; set; }
-        required public string Email { get; set; }
-        required public string PhoneNumber { get; set; }
-    }
-}   
+    [Required(ErrorMessage = "First name is required.")]
+    [StringLength(50, ErrorMessage = "First name cannot exceed 50 characters.")]
+    required public string FirstName { get; set; }
+    [StringLength(50, ErrorMessage = "Middle name cannot exceed 50 characters.")]
+    public string? MiddleName { get; set; }
+    [Required(ErrorMessage = "Last name is required.")]
+    [StringLength(50, ErrorMessage = "Last name cannot exceed 50 characters.")]
+    required public string LastName { get; set; }
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email format.")]
+    required public string Email { get; set; }
+    [Required(ErrorMessage = "Phone number is required.")]
+    [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters.")]
+    required public string PhoneNumber { get; set; } // accept single string for now. can be made composite later
+}

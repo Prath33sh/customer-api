@@ -1,7 +1,9 @@
-namespace CustomerApi.Models
+using System.ComponentModel.DataAnnotations;
+
+namespace CustomerApi.Models;
+
+public class CustomerUpdateRequest : CustomerRequest
 {
-    public class CustomerUpdateRequest : CustomerRequest
-    {
-        required public Guid Id { get; set; }
-    }
+    [Required(ErrorMessage = "User ID is required.")]
+    required public Guid Id { get; set; }
 }

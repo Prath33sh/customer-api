@@ -14,7 +14,7 @@ public class CustomerService(CustomerServiceDBContext dbContext, ILogger<Custome
         {
             throw new CustomerAlreadyExistsException("Customer already exists with the same Email");
         }
-        var user = new Customer()
+        var customer = new Customer()
         {
             FirstName = request.FirstName,
             MiddleName = request.MiddleName,
@@ -26,98 +26,98 @@ public class CustomerService(CustomerServiceDBContext dbContext, ILogger<Custome
 
         try
         {
-            await dbContext.Customers.AddAsync(user);
+            await dbContext.Customers.AddAsync(customer);
             await dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error creating user");
-            throw new DBOperationException("Error creating user");
+            logger.LogError(ex, "Error creating customer");
+            throw new DBOperationException("Error creating customer");
         }
 
         return new CustomerResponse
         {
-            Id = user.Id, 
-            FirstName = user.FirstName,
-            MiddleName = user.MiddleName,
-            LastName = user.LastName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber
+            Id = customer.Id, 
+            FirstName = customer.FirstName,
+            MiddleName = customer.MiddleName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            PhoneNumber = customer.PhoneNumber
         };
     }
 
     public async Task<CustomerResponse> UpdateCustomerAsync(CustomerUpdateRequest request)
     {
-        var user = await dbContext.Customers.Where(u => u.Id == request.Id && !u.IsDeleted).SingleOrDefaultAsync();
-        if (user == null)
+        var customer = await dbContext.Customers.Where(u => u.Id == request.Id && !u.IsDeleted).SingleOrDefaultAsync();
+        if (customer == null)
         {
             logger.LogWarning("Customer with ID {CustomerId} not found for update", request.Id);
             throw new NotFoundException("Customer not found");
         }
-        user.FirstName = request.FirstName;
-        user.MiddleName = request.MiddleName; 
-        user.LastName = request.LastName;
-        user.Email = request.Email; 
-        user.PhoneNumber = request.PhoneNumber;
+        customer.FirstName = request.FirstName;
+        customer.MiddleName = request.MiddleName; 
+        customer.LastName = request.LastName;
+        customer.Email = request.Email; 
+        customer.PhoneNumber = request.PhoneNumber;
         try
         {
-            dbContext.Customers.Update(user);
+            dbContext.Customers.Update(customer);
             await dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error updating user with ID {CustomerId}", request.Id);
-            throw new DBOperationException("Error updating user");
+            logger.LogError(ex, "Error updating customer with ID {CustomerId}", request.Id);
+            throw new DBOperationException("Error updating customer");
         }
 
         return new CustomerResponse
         {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            MiddleName = user.MiddleName,
-            LastName = user.LastName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber
+            Id = customer.Id,
+            FirstName = customer.FirstName,
+            MiddleName = customer.MiddleName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            PhoneNumber = customer.PhoneNumber
         };
     }
-    public async Task DeleteCustomerAsync(Guid userId)
+    public async Task DeleteCustomerAsync(Guid customerId)
     {
-        var user = await dbContext.Customers.Where(u => u.Id == userId && !u.IsDeleted).SingleOrDefaultAsync();
-        if (user == null)
+        var customer = await dbContext.Customers.Where(u => u.Id == customerId && !u.IsDeleted).SingleOrDefaultAsync();
+        if (customer == null)
         {
-            logger.LogWarning("Customer with ID {CustomerId} not found for deletion", userId);
+            logger.LogWarning("Customer with ID {CustomerId} not found for deletion", customerId);
             throw new NotFoundException("Customer not found");
         }
-        user.IsDeleted = true; // Soft delete
+        customer.IsDeleted = true; // Soft delete
         try
         {
-            dbContext.Customers.Update(user);
+            dbContext.Customers.Update(customer);
             await dbContext.SaveChangesAsync();
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error deleting user with ID {CustomerId}", userId);
-            throw new DBOperationException("Error deleting user");
+            logger.LogError(ex, "Error deleting customer with ID {CustomerId}", customerId);
+            throw new DBOperationException("Error deleting customer");
         }
     }
 
-    public async Task<CustomerResponse> GetCustomerByIdAsync(Guid userId)
+    public async Task<CustomerResponse> GetCustomerByIdAsync(Guid customerId)
     {
-        var user = await dbContext.Customers.Where(u => u.Id == userId && !u.IsDeleted).SingleOrDefaultAsync();
-        if (user == null)
+        var customer = await dbContext.Customers.Where(u => u.Id == customerId && !u.IsDeleted).SingleOrDefaultAsync();
+        if (customer == null)
         {
-            logger.LogWarning("Customer with ID {CustomerId} not found", userId);
+            logger.LogWarning("Customer with ID {CustomerId} not found", customerId);
             throw new NotFoundException("Customer not found");
         }
 
         return new CustomerResponse
         {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            MiddleName = user.MiddleName,
-            LastName = user.LastName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber
+            Id = customer.Id,
+            FirstName = customer.FirstName,
+            MiddleName = customer.MiddleName,
+            LastName = customer.LastName,
+            Email = customer.Email,
+            PhoneNumber = customer.PhoneNumber
         };
     }
 }

@@ -9,29 +9,29 @@ using Microsoft.Extensions.Logging;
 
 public class CustomerServiceTest
 {
-    private readonly ICustomerService _userService;
-    private readonly Mock<ILogger<CustomerService>> _mockLogger;
+    private readonly ICustomerService _customerService;
+    private readonly Mock<ILogger<CustomerApi.Services.CustomerService>> _mockLogger;
     private readonly CustomerServiceDBContext _dbContext;
 
     public CustomerServiceTest()
     {
-        _mockLogger = new Mock<ILogger<CustomerService>>();
+        _mockLogger = new Mock<ILogger<CustomerApi.Services.CustomerService>>();
         var options = new DbContextOptionsBuilder<CustomerServiceDBContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
         _dbContext = new CustomerServiceDBContext(options);
-        _userService = new CustomerService(_dbContext, _mockLogger.Object);
+        _customerService = new CustomerApi.Services.CustomerService(_dbContext, _mockLogger.Object);
     }
 
     [Fact]
     public async Task CreateCustomer_ReturnsValidCustomerResponse_WhenSuccessful()
     {
         // Arrange
-        var activeCustomer = await _userService.CreateCustomerAsync(
+        var activeCustomer = await _customerService.CreateCustomerAsync(
                             new CustomerRequest{FirstName = "John", MiddleName = "M", LastName = "Doe", Email = "john@example.com", PhoneNumber = "1234567890"});
 
         // Act
-        var result = await _userService.GetCustomerByIdAsync(activeCustomer.Id);
+        var result = await _customerService.GetCustomerByIdAsync(activeCustomer.Id);
 
         // Assert
         Assert.NotNull(result);
@@ -51,7 +51,7 @@ public class CustomerServiceTest
 
         // Act & Assert
         await Assert.ThrowsAsync<CustomerAlreadyExistsException>(() => 
-                        _userService.CreateCustomerAsync(
+                        _customerService.CreateCustomerAsync(
                             new CustomerRequest {FirstName = "Jake", LastName = "Doe", Email = "jake@example.com", PhoneNumber = "1234567890"}));
     }
 
@@ -62,7 +62,7 @@ public class CustomerServiceTest
         var activeCustomer = await AddTestCustomerAsync("John", "Doe", "john2@example.com", "1234567890");
 
         // Act
-        var result = await _userService.GetCustomerByIdAsync(activeCustomer.Id);
+        var result = await _customerService.GetCustomerByIdAsync(activeCustomer.Id);
 
         // Assert
         Assert.NotNull(result);
@@ -73,30 +73,30 @@ public class CustomerServiceTest
     public async Task GetCustomerByIdAsync_ThrowsException_WhenCustomerDeleted()
     {
         // Arrange
-        var deleteduser = await AddTestCustomerAsync("Jane", "Doe", "a@b.com", "0987654321", isDeleted: true);
+        var deletedCustomer = await AddTestCustomerAsync("Jane", "Doe", "a@b.com", "0987654321", isDeleted: true);
 
         // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _userService.GetCustomerByIdAsync(deleteduser.Id));
+        await Assert.ThrowsAsync<NotFoundException>(() => _customerService.GetCustomerByIdAsync(deletedCustomer.Id));
     }
 
     [Fact]
     public async Task GetCustomerByIdAsync_ThrowsException_WhenCustomerNotFound()
     {
         // Arrange
-        // No user is added to the context, so it should not find any user.
+        // No customer is added to the context, so it should not find any customer.
 
         // Act & Assert
-        await Assert.ThrowsAsync<NotFoundException>(() => _userService.GetCustomerByIdAsync(Guid.NewGuid()));
+        await Assert.ThrowsAsync<NotFoundException>(() => _customerService.GetCustomerByIdAsync(Guid.NewGuid()));
     }
 
     [Fact]
 public async Task UpdateCustomerAsync_UpdatesCustomer_WhenCustomerExists()
 {
     // Arrange
-    var user = await AddTestCustomerAsync("Alice", "Smith", "alice@example.com", "555-0000", middleName: "B");
+    var customer = await AddTestCustomerAsync("Alice", "Smith", "alice@example.com", "555-0000", middleName: "B");
     var updateRequest = new CustomerUpdateRequest
     {
-        Id = user.Id,
+        Id = customer.Id,
         FirstName = "Alicia",
         MiddleName = "Bee",
         LastName = "Smithers",
@@ -105,7 +105,7 @@ public async Task UpdateCustomerAsync_UpdatesCustomer_WhenCustomerExists()
     };
 
     // Act
-    var updated = await _userService.UpdateCustomerAsync(updateRequest);
+    var updated = await _customerService.UpdateCustomerAsync(updateRequest);
 
     // Assert
     Assert.NotNull(updated);
@@ -131,19 +131,19 @@ public async Task UpdateCustomerAsync_ThrowsException_WhenCustomerNotFound()
     };
 
     // Act & Assert
-    await Assert.ThrowsAsync<NotFoundException>(() => _userService.UpdateCustomerAsync(updateRequest));
+    await Assert.ThrowsAsync<NotFoundException>(() => _customerService.UpdateCustomerAsync(updateRequest));
 }
 
 [Fact]
 public async Task DeleteCustomerAsync_SoftDeletesCustomer_WhenCustomerExists()
 {
     // Arrange
-    var user = await AddTestCustomerAsync("Bob", "Brown", "bob@example.com", "555-2222");
+    var customer = await AddTestCustomerAsync("Bob", "Brown", "bob@example.com", "555-2222");
     // Act
-    await _userService.DeleteCustomerAsync(user.Id);
+    await _customerService.DeleteCustomerAsync(customer.Id);
 
     // Assert
-    var deleted = await _dbContext.Customers.FindAsync(user.Id);
+    var deleted = await _dbContext.Customers.FindAsync(customer.Id);
     Assert.NotNull(deleted);
     Assert.True(deleted.IsDeleted);
 }
@@ -155,12 +155,12 @@ public async Task DeleteCustomerAsync_ThrowsException_WhenCustomerNotFound()
     var id = Guid.NewGuid();
 
     // Act & Assert
-    await Assert.ThrowsAsync<NotFoundException>(() => _userService.DeleteCustomerAsync(id));
+    await Assert.ThrowsAsync<NotFoundException>(() => _customerService.DeleteCustomerAsync(id));
 }
 
     private async Task<Customer> AddTestCustomerAsync(string firstName, string lastName, string email, string phoneNumber, bool isDeleted = false, string? middleName = null)
     {
-        var user = new Customer
+        var customer = new Customer
         {
             FirstName = firstName,
             LastName = lastName,
@@ -170,10 +170,10 @@ public async Task DeleteCustomerAsync_ThrowsException_WhenCustomerNotFound()
         };
         if (middleName != null)
         {
-            user.MiddleName = middleName;
+            customer.MiddleName = middleName;
         }
-        await _dbContext.Customers.AddAsync(user);
+        await _dbContext.Customers.AddAsync(customer);
         await _dbContext.SaveChangesAsync();
-        return user;
+        return customer;
     }
 }
