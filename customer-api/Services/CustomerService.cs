@@ -10,7 +10,9 @@ public class CustomerService(CustomerServiceDBContext dbContext, ILogger<Custome
 {
     public async Task<CustomerResponse> CreateCustomerAsync(CustomerRequest request)
     {
-        if (await dbContext.Customers.AnyAsync(u => u.Email == request.Email))
+        if (await dbContext.Customers.AnyAsync(u =>
+                                                u.Email != null && request.Email != null &&
+                                                u.Email.ToLower() == request.Email.ToLower()))
         {
             throw new CustomerAlreadyExistsException("Customer already exists with the same Email");
         }
