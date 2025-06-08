@@ -1,0 +1,35 @@
+# Build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Dotnet artifacts
+*.dbmdl
+*.pdb
+*.cache
+*.log
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Other
+*.swp
+*.tmp
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
