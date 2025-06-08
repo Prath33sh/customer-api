@@ -4,6 +4,6 @@ namespace CustomerApi.Models;
 
 public class CustomerUpdateRequest : CustomerRequest
 {
-    [Required(ErrorMessage = "User ID is required.")]
+    [Required(ErrorMessage = "Customer Id is required.")]
     required public Guid Id { get; set; }
 }

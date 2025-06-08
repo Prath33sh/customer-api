@@ -15,8 +15,8 @@ public class CustomerController : ControllerBase
 
     public CustomerController(ILogger<CustomerController> logger, ICustomerService customerService)
     {
-        this._logger = logger;
-        this._customerService = customerService;
+        _logger = logger;
+        _customerService = customerService;
     }
     
     [HttpPost]
