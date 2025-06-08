@@ -59,12 +59,13 @@ public class CustomerControllerTest
     public async Task UpdateCustomer_ReturnsOk_WhenSuccessful()
     {
         // Arrange
-        var request = new CustomerUpdateRequest { Id = Guid.NewGuid(), FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
-        var response = new CustomerResponse { Id = request.Id, FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
+        var id = Guid.NewGuid();
+        var request = new CustomerUpdateRequest { Id = id, FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
+        var response = new CustomerResponse { Id = id, FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
         _mockCustomerService.Setup(s => s.UpdateCustomerAsync(request)).ReturnsAsync(response);
 
         // Act
-        var result = await _controller.UpdateCustomer(request);
+        var result = await _controller.UpdateCustomer(id, request);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
@@ -119,15 +120,29 @@ public class CustomerControllerTest
     public async Task UpdateCustomer_Returns500_WhenDBOperationException()
     {
         // Arrange
-        var request = new CustomerUpdateRequest { Id = Guid.NewGuid(), FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
+        var id = Guid.NewGuid();
+        var request = new CustomerUpdateRequest { Id = id, FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
         _mockCustomerService.Setup(s => s.UpdateCustomerAsync(request)).ThrowsAsync(new DBOperationException("DB error"));
 
         // Act
-        var result = await _controller.UpdateCustomer(request);
+        var result = await _controller.UpdateCustomer(id, request);
 
         // Assert
         var objectResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(500, objectResult.StatusCode);
+    }
+
+    [Fact]
+    public async Task UpdateCustomer_ReturnsBadRequest_WhenIdIsEmpty()
+    {
+        // Arrange
+        var request = new CustomerUpdateRequest { Id = Guid.NewGuid(), FirstName = "A", LastName = "B", Email = "a@b.com", PhoneNumber = "123" };
+        var id = Guid.Empty;
+        // Act
+        var result = await _controller.UpdateCustomer(id, request);
+
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result);
     }
 
     [Fact]

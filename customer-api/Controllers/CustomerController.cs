@@ -68,14 +68,18 @@ public class CustomerController : ControllerBase
         }
     }
 
-    [HttpPut]
+    [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CustomerResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateCustomer([FromBody] CustomerUpdateRequest request)
+    public async Task<IActionResult> UpdateCustomer([FromRoute] Guid id, [FromBody] CustomerUpdateRequest request)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
+        if (id == Guid.Empty)
+            return BadRequest(new { message = "customer ID not found." });
+           
+        request.Id = id; // Ensure the ID in the request matches the route parameter
         try
         {
             var customer = await _customerService.UpdateCustomerAsync(request);

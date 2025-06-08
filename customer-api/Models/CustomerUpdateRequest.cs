@@ -5,10 +5,9 @@ namespace CustomerApi.Models;
 
 public class CustomerUpdateRequest : CustomerRequest
 {
-    [Required(ErrorMessage = "Customer Id is required.")]
-    [JsonPropertyName("id")]
-    required public Guid Id { get; set; }
-    
-    [Required(ErrorMessage = "Middle name is required. If not applicable, set it to null.")]
+    [JsonIgnore] // This will be set from path
+    public Guid? Id { get; set; }
+
+    [Required(AllowEmptyStrings = true, ErrorMessage = "Middle name is required. If not applicable, set it to empty string.")]
     public override string? MiddleName { get; set; }
 }
