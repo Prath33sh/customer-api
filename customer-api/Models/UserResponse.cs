@@ -1,7 +1,7 @@
 namespace CustomerApi.Models;
 public class UserResponse
 {
-    required public Guid UserId { get; set; }
+    required public Guid Id { get; set; }
     required public string FirstName { get; set; }
     public string? MiddleName { get; set; }
     required public string LastName { get; set; }
