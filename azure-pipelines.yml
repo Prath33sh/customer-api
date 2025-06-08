@@ -1,0 +1,88 @@
+trigger:
+- main
+
+variables:
+  imageName: customer-api
+  dockerRegistryServiceConnection: 'YourACRServiceConnection'
+  acrName: youracr.azurecr.io
+
+stages:
+- stage: Build
+  displayName: Build and Test
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: DockerCompose@0
+      displayName: Build and run tests
+      inputs:
+        containerregistrytype: 'Container Registry'
+        dockerComposeFile: '**/docker-compose.yml'
+        action: 'Run services'
+        services: 'customer-api'
+        buildImages: true
+
+    - script: |
+        docker build -f customer-api/Dockerfile -t $(imageName):$(Build.BuildId) .
+      displayName: 'Build Docker image'
+
+    - script: |
+        docker run --rm $(imageName):$(Build.BuildId) dotnet test /app/customer-api.tests/customer-api.tests.csproj
+      displayName: 'Run tests'
+
+    - task: Docker@2
+      displayName: 'Push image to ACR'
+      inputs:
+        command: 'push'
+        repository: '$(acrName)/$(imageName)'
+        tags: |
+          $(Build.BuildId)
+        containerRegistry: $(dockerRegistryServiceConnection)
+
+- stage: Dev
+  displayName: Deploy to Dev
+  dependsOn: Build
+  jobs:
+  - deployment: DeployDev
+    environment: 'dev'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo "Deploying to Dev environment"
+          # Add your deployment steps here (e.g., Azure Web App, AKS, etc.)
+
+- stage: QA
+  displayName: Deploy to QA
+  dependsOn: Dev
+  jobs:
+  - deployment: DeployQA
+    environment: 'qa'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo "Deploying to QA environment"
+          # Add your deployment steps here
+
+- stage: Prod
+  displayName: Deploy to Prod
+  dependsOn: QA
+  jobs:
+  - deployment: DeployProd
+    environment: 'prod'
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: echo "Deploying to Prod environment"
+          # Add your deployment steps here

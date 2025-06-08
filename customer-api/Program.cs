@@ -37,5 +37,7 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
+app.MapHealthChecks("/health");
+
 app.Run();
 
