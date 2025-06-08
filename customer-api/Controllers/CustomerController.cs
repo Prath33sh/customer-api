@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using CustomerApi.Services;
 using CustomerApi.Exceptions;
 
-namespace CustomerService.Controllers;
+namespace CustomerApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
