@@ -1,17 +1,14 @@
 namespace CustomerApi.Exceptions
 {
-    public class CustomerAlreadyExistsException : Exception
+    public class CustomerAlreadyExistsException(string message) : Exception(message)
     {
-        public CustomerAlreadyExistsException(string message) : base(message) { }
     }
 
-    public class DBOperationException : Exception
+    public class DBOperationException(string message) : Exception(message)
     {
-        public DBOperationException(string message) : base(message) { }
     }
 
-    public class NotFoundException : Exception
+    public class NotFoundException(string message) : Exception(message)
     {
-        public NotFoundException(string message) : base(message) { }
     }
 }
